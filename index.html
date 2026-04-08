@@ -83,6 +83,12 @@ body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospa
     </div>
   </div>
   <div id="tabs"></div>
+ <div id="debug" style="padding:10px;font-size:10px;color:yellow">
+  <div id="dbg-BTC"></div>
+  <div id="dbg-GOLD"></div>
+  <div id="dbg-SILVER"></div>
+  <div id="dbg-OIL"></div>
+</div>
   <div id="main"></div>
 </div>
 <div id="modal"></div>
@@ -140,14 +146,27 @@ function simulate(id,n){var p=FB[id]||FB.BTC,pr=p.b,d=[];for(var i=0;i<n;i++){va
 function parseBinK(j){if(!Array.isArray(j))return null;return j.map(function(k){var o=parseFloat(k[1]),c=parseFloat(k[4]);return{o:o,h:parseFloat(k[2]),l:parseFloat(k[3]),c:c,ret:(c-o)/(o||1),t:k[0]};});}
 function fetchKlines(asset){return fetch(asset.binK).then(function(r){return r.json();}).then(function(j){var c=parseBinK(j);if(c&&c.length>=10)return{candles:c,source:"BIN"};throw new Error();}).catch(function(){return{candles:simulate(asset.id,1000),source:"SIM"};});}
 function fetchPrice(asset){
-  return fetch(MEXC(asset.mexcSym)).then(function(r){return r.json();}).then(function(j){
-    if(j.success&&j.data&&j.data.lastPrice){var p=parseFloat(j.data.lastPrice);if(p&&p>0)return{price:p,src:"MEXC"};}
+  var url=MEXC(asset.mexcSym);
+  return fetch(url).then(function(r){return r.json();}).then(function(j){
+    if(j.success&&j.data&&j.data.lastPrice){
+      var p=parseFloat(j.data.lastPrice);
+      if(p&&p>0){
+        var dbg=document.getElementById("dbg-"+asset.id);
+        if(dbg)dbg.textContent=asset.id+": $"+p+" MEXC ✅";
+        return{price:p,src:"MEXC"};
+      }
+    }
     throw new Error();
-  }).catch(function(){
-    if(asset.id==="BTC"){return fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT").then(function(r){return r.json();}).then(function(j){var p=parseFloat(j.price);if(p&&p>0)return{price:p,src:"BIN"};throw new Error();}).catch(function(){return null;});}
+  }).catch(function(e){
+    var dbg=document.getElementById("dbg-"+asset.id);
+    if(dbg)dbg.textContent=asset.id+": FAIL ❌ "+e;
+    if(asset.id==="BTC"){
+      return fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT").then(function(r){return r.json();}).then(function(j){var p=parseFloat(j.price);if(p&&p>0)return{price:p,src:"BIN"};throw new Error();}).catch(function(){return null;});
+    }
     return null;
   });
 }
+
 function fetchHistoricalKlines(asset,since){return fetch(asset.binK).then(function(r){return r.json();}).then(function(j){var c=parseBinK(j);if(!c)return[];return c.filter(function(k){return k.t>=since;});}).catch(function(){return[];});}
 
 async function checkOpenTrades(){
