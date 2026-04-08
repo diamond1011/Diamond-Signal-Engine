@@ -1,18 +1,19 @@
 import requests
 import time
-import math
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
 
-TG_TOKEN = "8563359700:AAF2lOkal_iDOSMhyndVDsPNvKfIa1b0QaE"
+TG_TOKEN = "8563359700:AAF2lOkal_iDOSMhyndVDsPNvKfIa1x0QaE"
 TG_CHAT = "5106454697"
-PROXY = "https://corsproxy.io/?"
 BIAS_MIN = 0.65
-INTERVAL = 3600  # cada hora
+INTERVAL = 3600
 
 ASSETS = [
-    {"id": "BTC", "sym": "BTC_USDT", "dec": 1},
-    {"id": "GOLD", "sym": "XAUT_USDT", "dec": 2},
-    {"id": "SILVER", "sym": "SILVER_USDT", "dec": 3},
-    {"id": "OIL", "sym": "USOIL_USDT", "dec": 2},
+    {"id": "BTC", "sym": "BTC_USDT"},
+    {"id": "GOLD", "sym": "XAUT_USDT"},
+    {"id": "SILVER", "sym": "SILVER_USDT"},
+    {"id": "OIL", "sym": "USOIL_USDT"},
 ]
 
 sent = {}
@@ -21,14 +22,15 @@ def send_tg(text):
     try:
         requests.post(
             f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
-            json={"chat_id": TG_CHAT, "text": text}
+            json={"chat_id": TG_CHAT, "text": text},
+            timeout=10
         )
     except:
         pass
 
 def get_price(sym):
     try:
-        url = PROXY + f"https://contract.mexc.com/api/v1/contract/ticker?symbol={sym}"
+        url = f"https://contract.mexc.com/api/v1/contract/ticker?symbol={sym}"
         r = requests.get(url, timeout=10).json()
         if r.get("success") and r.get("data"):
             return float(r["data"]["lastPrice"])
@@ -38,23 +40,16 @@ def get_price(sym):
 
 def get_klines(sym):
     try:
-        url = PROXY + f"https://contract.mexc.com/api/v1/contract/kline/{sym}?interval=Hour1&start=0&end=0"
+        if sym == "BTC_USDT":
+            url = "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=200"
+            r = requests.get(url, timeout=10).json()
+            return [{"ret": (float(k[4])-float(k[1]))/float(k[1])} for k in r]
+        url = f"https://contract.mexc.com/api/v1/contract/kline/{sym}?interval=Hour1"
         r = requests.get(url, timeout=15).json()
         if r.get("success") and r.get("data"):
-            d = r["data"]
-            closes = d.get("close", [])
-            opens = d.get("open", [])
-            highs = d.get("high", [])
-            lows = d.get("low", [])
-            candles = []
-            for i in range(len(closes)):
-                o = float(opens[i]) if i < len(opens) else float(closes[i])
-                c = float(closes[i])
-                h = float(highs[i]) if i < len(highs) else max(o,c)
-                l = float(lows[i]) if i < len(lows) else min(o,c)
-                ret = (c - o) / o if o else 0
-                candles.append({"o":o,"h":h,"l":l,"c":c,"ret":ret})
-            return candles
+            closes = r["data"].get("close", [])
+            opens = r["data"].get("open", [])
+            return [{"ret": (float(closes[i])-float(opens[i]))/float(opens[i])} for i in range(len(closes))]
     except:
         pass
     return []
@@ -70,7 +65,7 @@ def analyze(candles, window):
     direction = "LONG" if wins >= 0.5 else "SHORT"
     return {"bias": bias, "dir": direction}
 
-def check():
+def check_signals():
     windows = [
         {"label": "12H", "size": 12},
         {"label": "24H", "size": 24},
@@ -79,15 +74,6 @@ def check():
     ]
     for asset in ASSETS:
         candles = get_klines(asset["sym"])
-        if not candles:
-            # fallback Binance for BTC
-            if asset["id"] == "BTC":
-                try:
-                    url = "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=200"
-                    r = requests.get(url, timeout=10).json()
-                    candles = [{"o":float(k[1]),"h":float(k[2]),"l":float(k[3]),"c":float(k[4]),"ret":(float(k[4])-float(k[1]))/float(k[1])} for k in r]
-                except:
-                    pass
         if not candles:
             continue
         price = get_price(asset["sym"])
@@ -104,18 +90,45 @@ def check():
                         f"{'🟢 LONG' if result['dir'] == 'LONG' else '🔴 SHORT'} {w['label']}\n"
                         f"Bias: {result['bias']*100:.1f}%\n"
                         f"Precio MEXC: {price}\n\n"
-                        f"Abre la app para ver niveles:\n"
                         f"https://diamondsignalengine.netlify.app"
                     )
                     send_tg(msg)
-                    # Reset after 1 hour
                     time.sleep(0)
 
+# Proxy HTTP server
+prices_cache = {}
+
+class ProxyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path.startswith("/price/"):
+            sym = self.path.split("/price/")[1]
+            price = get_price(sym)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            if price:
+                self.wfile.write(json.dumps({"success": True, "price": price}).encode())
+            else:
+                self.wfile.write(json.dumps({"success": False}).encode())
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+    def log_message(self, format, *args):
+        pass
+
+def run_server():
+    server = HTTPServer(("0.0.0.0", 8080), ProxyHandler)
+    server.serve_forever()
+
 def main():
-    send_tg("🤖 Bot de señales activo 24/7\nRecibirás alertas automáticas aunque no tengas la app abierta.")
+    send_tg("🤖 Bot activo 24/7\nProxy de precios MEXC activado.")
+    t = threading.Thread(target=run_server, daemon=True)
+    t.start()
     while True:
         try:
-            check()
+            check_signals()
         except Exception as e:
             pass
         time.sleep(INTERVAL)
