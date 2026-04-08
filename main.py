@@ -256,7 +256,7 @@ def run_server():
     server.serve_forever()
 
 def main():
-    send_tg("🤖 Bot activo 24/7\n✅ Proxy MEXC\n✅ Señales 24/7\n✅ Alertas confluencia\n✅ Alertas señal contraria")
+    # send_tg("🤖 Bot activo 24/7\n✅ Proxy MEXC\n✅ Señales 24/7\n✅ Alertas confluencia\n✅ Alertas señal contraria")
     t = threading.Thread(target=run_server, daemon=True)
     t.start()
     while True:
