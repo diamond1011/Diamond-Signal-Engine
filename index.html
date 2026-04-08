@@ -92,8 +92,8 @@ var TG_CHAT="5106454697";
 var REFRESH=60000;
 var ATR_MULT={"6H":1,"12H":1.5,"24H":2,"48H":3,"1W":5};
 var VENTANAS_OPERABLES=["12H","24H","48H","1W"];
-var PROXY="https://api.codetabs.com/v1/proxy?quest=";
-var MEXC=function(sym){return PROXY+"https://contract.mexc.com/api/v1/contract/ticker?symbol="+sym;};
+var RAILWAY="https://diamond-signal-engine-production.up.railway.app";
+var MEXC=function(sym){return RAILWAY+"/price/"+sym;};
 
 var ASSETS=[
   {id:"BTC",label:"Bitcoin",display:"BTC/USDT",color:"#F7931A",icon:"&#8383;",dec:1,mexcSym:"BTC_USDT",
@@ -145,7 +145,7 @@ function fetchKlines(asset){
 
 function fetchPrice(asset){
   return fetch(MEXC(asset.mexcSym)).then(function(r){return r.json();}).then(function(j){
-    if(j.success&&j.data&&j.data.lastPrice){var p=parseFloat(j.data.lastPrice);if(p&&p>0)return{price:p,src:"MEXC"};}
+    if(j.success&&j.price){var p=parseFloat(j.price);if(p&&p>0)return{price:p,src:"MEXC"};}
     throw new Error();
   }).catch(function(){
     if(asset.id==="BTC"){return fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT").then(function(r){return r.json();}).then(function(j){var p=parseFloat(j.price);if(p&&p>0)return{price:p,src:"BIN"};throw new Error();}).catch(function(){return null;});}
