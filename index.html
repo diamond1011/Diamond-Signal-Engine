@@ -534,8 +534,6 @@ async function init(){
 }
 
 init();
-</script>
-</body>
 function render(){
   var r=S.results[S.active],ast=ASSETS.find(function(a){return a.id===S.active;});if(!r||!r.windows||!ast)return;
   var totalSigs=0;Object.keys(S.results).forEach(function(id){var res=S.results[id];if(res&&res.windows)totalSigs+=res.windows.filter(function(w){return w.active;}).length;});
