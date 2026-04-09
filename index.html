@@ -118,6 +118,8 @@ var TRADES_INICIALES=[
   {id:"t6",assetId:"BTC",dir:"LONG",entry:67000.0,tp:70000.0,sl:65000.0,sz:56,window:"24H",bias:0.70,status:"CLOSED",closePrice:70000.0,closedBy:"TP",pnl:119.64,commission:0,openTime:"2026-04-08T16:00:00Z",closeTime:"2026-04-09T10:00:00Z"},
   {id:"t7",assetId:"GOLD",dir:"LONG",entry:3280.0,tp:3340.0,sl:3240.0,sz:42,window:"24H",bias:0.68,status:"CLOSED",closePrice:3340.0,closedBy:"TP",pnl:42.66,commission:0,openTime:"2026-04-08T10:00:00Z",closeTime:"2026-04-09T08:00:00Z"},
   {id:"t8",assetId:"GOLD",dir:"LONG",entry:3300.0,tp:3380.0,sl:3250.0,sz:42,window:"24H",bias:0.67,status:"CLOSED",closePrice:3250.0,closedBy:"SL",pnl:-45.74,commission:0,openTime:"2026-04-09T10:00:00Z",closeTime:"2026-04-09T18:00:00Z"}
+  ,{id:"t9",assetId:"BTC",dir:"LONG",entry:72009.0,tp:73000.0,sl:71000.0,sz:56,window:"24H",bias:0.67,status:"CLOSED",closePrice:72008.2,closedBy:"SL",pnl:-105.17,commission:0,openTime:"2026-04-08T15:00:00Z",closeTime:"2026-04-08T15:33:20Z"}
+,{id:"t10",assetId:"BTC",dir:"LONG",entry:71425.0,tp:72500.0,sl:70500.0,sz:56,window:"24H",bias:0.67,status:"CLOSED",closePrice:71424.6,closedBy:"SL",pnl:-110.93,commission:0,openTime:"2026-04-08T15:45:00Z",closeTime:"2026-04-08T16:09:05Z"}
 ];
 
 function saveState(){try{localStorage.setItem("se_trades",JSON.stringify(S.trades));localStorage.setItem("se_balance",JSON.stringify(S.balance));localStorage.setItem("se_bayes",JSON.stringify(S.bayes));localStorage.setItem("se_sigtimes",JSON.stringify(SIGNAL_TIMES));}catch(e){}}
@@ -125,10 +127,10 @@ function loadState(){
   try{
     var t=localStorage.getItem("se_trades");var b=localStorage.getItem("se_balance");var by=localStorage.getItem("se_bayes");var st=localStorage.getItem("se_sigtimes");
     if(t&&JSON.parse(t).length>0){S.trades=JSON.parse(t);}
-    else{S.trades=TRADES_INICIALES;S.balance={initial:CAPITAL_INICIAL,current:463.55,history:[]};saveState();}
+    else{S.trades=TRADES_INICIALES;S.balance={initial:CAPITAL_INICIAL,current:241.31,history:[]};saveState();}
     if(b)S.balance=JSON.parse(b);if(by)S.bayes=JSON.parse(by);
     if(st)SIGNAL_TIMES=JSON.parse(st);
-  }catch(e){S.trades=TRADES_INICIALES;S.balance={initial:CAPITAL_INICIAL,current:463.55,history:[]};}
+  }catch(e){S.trades=TRADES_INICIALES;S.balance={initial:CAPITAL_INICIAL,current:241.31,history:[]};}
 }
 
 var S={data:{},sources:{},results:{},bayes:{},active:"BTC",sent:{},trades:[],balance:{initial:CAPITAL_INICIAL,current:463.55,history:[]}};
