@@ -577,7 +577,21 @@ async function init(){
   },REFRESH);
 }
 
-init();
+(function(){
+  var b=localStorage.getItem("se_balance");
+  if(b){var bs=JSON.parse(b);bs.current=241.31;localStorage.setItem("se_balance",JSON.stringify(bs));}
+  var t=localStorage.getItem("se_trades");
+  if(t){
+    var ts=JSON.parse(t);
+    if(!ts.find(function(x){return x.id==="t9";})){
+      ts.push({id:"t9",assetId:"BTC",dir:"LONG",entry:72009.0,tp:73000.0,sl:71000.0,sz:56,window:"24H",bias:0.67,status:"CLOSED",closePrice:72008.2,closedBy:"SL",pnl:-105.17,commission:0,openTime:"2026-04-08T15:00:00Z",closeTime:"2026-04-08T15:33:20Z"});
+      ts.push({id:"t10",assetId:"BTC",dir:"LONG",entry:71425.0,tp:72500.0,sl:70500.0,sz:56,window:"24H",bias:0.67,status:"CLOSED",closePrice:71424.6,closedBy:"SL",pnl:-110.93,commission:0,openTime:"2026-04-08T15:45:00Z",closeTime:"2026-04-08T16:09:05Z"});
+      localStorage.setItem("se_trades",JSON.stringify(ts));
+    }
+  }
+})();
+
+  init();
 </script>
 </body>
 </html>
