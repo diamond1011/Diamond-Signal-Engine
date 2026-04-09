@@ -437,7 +437,7 @@ function render(){
     +"</div>"
     +(openTrades.length>0?"<div style='margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap'>"+openTrades.map(function(t){
       var cur=S.results[t.assetId]?S.results[t.assetId].price:t.entry;var diff=t.dir==="LONG"?cur-t.entry:t.entry-cur;
-      var pnlEst=parseFloat((diff/t.entry*t.sz*APALANCAMIENTO).toFixed(2));var isNotBTC=t.assetId!=="BTC";
+      var pnlEst=parseFloat((diff/t.entry*t.sz*APALANCAMIENTO).toFixed(2));var isNotBTC=false;
       return "<div style='flex:1;min-width:110px;background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:7px 10px'>"
         +"<div style='font-size:8px;color:var(--muted);margin-bottom:3px'>"+t.assetId+" "+t.dir+(t.manual?" ✋":"")+"</div>"
         +(isNotBTC?"<div style='font-size:11px;color:var(--amber)'>Ver en MEXC</div>":"<div style='font-size:13px;font-weight:700;color:"+(pnlEst>=0?"var(--green)":"var(--red)")+"'>"+(pnlEst>=0?"+":"")+fmtN(pnlEst,2)+" USDT</div>")
@@ -535,7 +535,7 @@ function render(){
     if(openTrades.length===0){h+="<div class='flat'>NO HAY TRADES ABIERTOS</div>";}
     else{
       openTrades.forEach(function(t){
-        var ast2=ASSETS.find(function(a){return a.id===t.assetId;});var isNotBTC=t.assetId!=="BTC";
+        var ast2=ASSETS.find(function(a){return a.id===t.assetId;});var isNotBTC=false;
         var cur=S.results[t.assetId]?S.results[t.assetId].price:t.entry;var diff=t.dir==="LONG"?cur-t.entry:t.entry-cur;
         var pnlEst=parseFloat((diff/t.entry*t.sz*APALANCAMIENTO).toFixed(2));var pnlColor=pnlEst>=0?"var(--green)":"var(--red)";var dc=t.dir==="LONG"?"var(--green)":"var(--red)";
         var tpPct=t.dir==="LONG"?((cur-t.entry)/(t.tp-t.entry)*100):((t.entry-cur)/(t.entry-t.tp)*100);tpPct=Math.max(0,Math.min(100,tpPct));
