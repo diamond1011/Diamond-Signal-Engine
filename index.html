@@ -309,16 +309,21 @@ function showEditModal(tradeId){
   var trade=S.trades.find(function(t){return t.id===tradeId;});if(!trade)return;
   var modal=document.getElementById("modal");modal.style.display="flex";
   modal.innerHTML="<div style='background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px;width:90%;max-width:340px'>"
-    +"<div style='font-size:8px;letter-spacing:4px;color:var(--muted);margin-bottom:12px'>EDITAR TP / SL</div>"
+    +"<div style='font-size:8px;letter-spacing:4px;color:var(--muted);margin-bottom:12px'>EDITAR TRADE</div>"
     +"<div style='font-size:14px;font-weight:700;color:#fff;margin-bottom:16px'>"+trade.assetId+" "+trade.dir+"</div>"
+    +"<div style='font-size:9px;color:var(--muted);margin-bottom:6px'>TAMAÑO (USDT)</div><input id='edit-sz' type='number' value='"+trade.sz+"' step='1' style='width:100%;background:var(--bg);border:1px solid var(--accent);color:#fff;padding:10px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:14px;margin-bottom:12px'/>"
     +"<div style='font-size:9px;color:var(--green);margin-bottom:6px'>TAKE PROFIT</div><input id='edit-tp' type='number' value='"+trade.tp+"' step='0.01' style='width:100%;background:var(--bg);border:1px solid var(--green);color:#fff;padding:10px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:14px;margin-bottom:12px'/>"
     +"<div style='font-size:9px;color:var(--red);margin-bottom:6px'>STOP LOSS</div><input id='edit-sl' type='number' value='"+trade.sl+"' step='0.01' style='width:100%;background:var(--bg);border:1px solid var(--red);color:#fff;padding:10px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:14px;margin-bottom:16px'/>"
     +"<div style='display:flex;gap:8px'><button onclick='confirmEdit(\""+tradeId+"\")' style='flex:2;padding:10px;background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.4);color:var(--accent);border-radius:4px;font-family:JetBrains Mono,monospace;font-size:9px;letter-spacing:2px;cursor:pointer'>GUARDAR</button><button onclick='closeModal()' style='flex:1;padding:10px;background:var(--dim);border:1px solid var(--border);color:var(--muted);border-radius:4px;font-family:JetBrains Mono,monospace;font-size:9px;cursor:pointer'>CANCELAR</button></div></div>";
 }
 function confirmEdit(tradeId){
-  var tp=parseFloat(document.getElementById("edit-tp").value);var sl=parseFloat(document.getElementById("edit-sl").value);
+  var tp=parseFloat(document.getElementById("edit-tp").value);
+  var sl=parseFloat(document.getElementById("edit-sl").value);
+  var sz=parseFloat(document.getElementById("edit-sz").value);
   if(isNaN(tp)||isNaN(sl)){alert("Valores inválidos");return;}
-  var trade=S.trades.find(function(t){return t.id===tradeId;});if(trade){trade.tp=tp;trade.sl=sl;}
+  if(isNaN(sz)||sz<=0){alert("Tamaño inválido");return;}
+  var trade=S.trades.find(function(t){return t.id===tradeId;});
+  if(trade){trade.tp=tp;trade.sl=sl;trade.sz=sz;}
   closeModal();saveState();render();
 }
 function showEditPnlModal(tradeId){
