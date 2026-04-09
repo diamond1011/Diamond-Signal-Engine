@@ -508,7 +508,6 @@ async function init(){
   }
   await checkOpenTrades();
   var lc=Object.keys(S.sources).filter(function(id){return S.sources[id]==="MEXC"||S.sources[id]==="BIN";}).length;
-  sendTG("🚀 Signal Engine Activo\n\nBalance: $"+S.balance.current+" USDT\nActivos: BTC · GOLD · SILVER · OIL\nMEXC live: "+lc+"/4\n\nRecibirás alertas automáticas.");
   document.getElementById("p-tg").style.display="flex";
   document.getElementById("boot").style.display="none";document.getElementById("app").style.display="block";
   render();
