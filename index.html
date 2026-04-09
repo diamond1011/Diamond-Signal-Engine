@@ -205,8 +205,54 @@ function deleteTrade(tradeId){
   S.trades=S.trades.filter(function(t){return t.id!==tradeId;});
   saveState();syncTradesToRailway();render();
 }
-function addTradeById(assetId,wLabel){var r=S.results[assetId];if(!r)return;var w=r.windows.find(function(x){return x.label===wLabel;});if(!w)return;addTrade(assetId,w,r.price);}
+function addTradeById(assetId,wLabel){
+  var r=S.results[assetId];if(!r)return;
+  var w=r.windows.find(function(x){return x.label===wLabel;});if(!w)return;
+  var asset=ASSETS.find(function(a){return a.id===assetId;});
+  var atr=r.atr;var mx=ATR_MULT[w.label]||2,slD=atr*mx,tpD=slD*tpMultiplier(w.bias);
+  var suggestedTp=w.dir==="LONG"?r.price+tpD:r.price-tpD;
+  var suggestedSl=w.dir==="LONG"?r.price-slD:r.price+slD;
+  var modal=document.getElementById("modal");modal.style.display="flex";
+  modal.innerHTML="<div style='background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px;width:92%;max-width:360px;max-height:90vh;overflow-y:auto'>"
+    +"<div style='font-size:8px;letter-spacing:4px;color:var(--muted);margin-bottom:6px'>CONFIRMAR TRADE</div>"
+    +"<div style='font-size:14px;font-weight:700;color:#fff;margin-bottom:4px'>"+assetId+" "+w.dir+" "+w.label+"</div>"
+    +"<div style='font-size:9px;color:var(--muted);margin-bottom:14px'>Bias: "+(w.bias*100).toFixed(1)+"% · Kelly sugerido: $"+w.sz+"</div>"
+    +"<div style='margin-bottom:10px'><div style='font-size:9px;color:var(--accent);margin-bottom:5px'>PRECIO DE ENTRADA REAL</div>"
+    +"<input id='ct-entry' type='number' value='"+r.price.toFixed(asset.dec)+"' step='0.01' style='width:100%;background:var(--bg);border:1px solid var(--accent);color:#fff;padding:9px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:14px'/></div>"
+    +"<div style='margin-bottom:10px'><div style='font-size:9px;color:var(--muted);margin-bottom:5px'>TAMAÑO REAL (USDT)</div>"
+    +"<input id='ct-sz' type='number' value='"+w.sz+"' step='1' style='width:100%;background:var(--bg);border:1px solid var(--border);color:#fff;padding:9px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:14px'/></div>"
+    +"<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px'>"
+    +"<div><div style='font-size:9px;color:var(--green);margin-bottom:5px'>TAKE PROFIT</div>"
+    +"<input id='ct-tp' type='number' value='"+suggestedTp.toFixed(asset.dec)+"' step='0.01' style='width:100%;background:var(--bg);border:1px solid var(--green);color:#fff;padding:9px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:12px'/></div>"
+    +"<div><div style='font-size:9px;color:var(--red);margin-bottom:5px'>STOP LOSS</div>"
+    +"<input id='ct-sl' type='number' value='"+suggestedSl.toFixed(asset.dec)+"' step='0.01' style='width:100%;background:var(--bg);border:1px solid var(--red);color:#fff;padding:9px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:12px'/></div></div>"
+    +"<div style='display:flex;gap:8px'>"
+    +"<button onclick='confirmTradeEntry(\""+assetId+"\",\""+wLabel+"\")' style='flex:2;padding:11px;background:rgba(0,232,122,0.15);border:1px solid rgba(0,232,122,0.4);color:var(--green);border-radius:4px;font-family:JetBrains Mono,monospace;font-size:9px;letter-spacing:2px;cursor:pointer'>📥 CONFIRMAR TRADE</button>"
+    +"<button onclick='closeModal()' style='flex:1;padding:11px;background:var(--dim);border:1px solid var(--border);color:var(--muted);border-radius:4px;font-family:JetBrains Mono,monospace;font-size:9px;cursor:pointer'>CANCELAR</button>"
+    +"</div></div>";
+}
+function confirmTradeEntry(assetId,wLabel){
+  var r=S.results[assetId];if(!r)return;
+  var w=r.windows.find(function(x){return x.label===wLabel;});if(!w)return;
+  var entry=parseFloat(document.getElementById("ct-entry").value);
+  var sz=parseFloat(document.getElementById("ct-sz").value);
+  var tp=parseFloat(document.getElementById("ct-tp").value);
+  var sl=parseFloat(document.getElementById("ct-sl").value);
+  if(!entry||isNaN(entry)){alert("Precio inválido");return;}
+  if(!sz||isNaN(sz)||sz<=0){alert("Tamaño inválido");return;}
+  if(!tp||isNaN(tp)){alert("TP inválido");return;}
+  if(!sl||isNaN(sl)){alert("SL inválido");return;}
+  closeModal();
+  var asset=ASSETS.find(function(a){return a.id===assetId;});
+  var id="t"+Date.now();
+  var trade={id:id,assetId:assetId,dir:w.dir,entry:parseFloat(entry.toFixed(asset.dec)),tp:parseFloat(tp.toFixed(asset.dec)),sl:parseFloat(sl.toFixed(asset.dec)),sz:sz,window:w.label,bias:w.bias,status:"OPEN",closePrice:null,closedBy:null,pnl:null,openTime:new Date().toISOString(),closeTime:null,lastChecked:Date.now()};
+  S.trades.unshift(trade);saveState();syncTradesToRailway();
+  sendTG("📥 TRADE ABIERTO\n"+assetId+" "+w.dir+" "+w.label+(w.is12H?"\n⚠ Señal 12H":"")+"\nEntrada: "+trade.entry+"\nTP: "+trade.tp+" ✅\nSL: "+trade.sl+" 🛑\nTamaño: $"+sz+" USDT · x"+APALANCAMIENTO);
+  render();
+}
+
 function addTrade(assetId,w,currentPrice){
+
   var id="t"+Date.now();var asset=ASSETS.find(function(a){return a.id===assetId;});var r=S.results[assetId];
   var atr=r?r.atr:currentPrice*0.005;var mx=ATR_MULT[w.label]||2,slD=atr*mx,tpD=slD*tpMultiplier(w.bias);
   var tp=w.dir==="LONG"?currentPrice+tpD:currentPrice-tpD;var sl=w.dir==="LONG"?currentPrice-slD:currentPrice+slD;
