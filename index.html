@@ -98,10 +98,10 @@ var MEXC=function(sym){return RAILWAY+"/price/"+sym;};
 var ASSETS=[
   {id:"BTC",label:"Bitcoin",display:"BTC/USDT",color:"#F7931A",icon:"&#8383;",dec:1,mexcSym:"BTC_USDT",
    binK:"https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=1000"},
-  {id:"GOLD",label:"Gold",display:"XAUT/USDT",color:"#FFD700",icon:"Au",dec:2,mexcSym:"XAUT_USDT",
+  {id:"GOLD",label:"Gold",display:"XAUT/USDT",color:"#FFD700",icon:"Au",dec:1,mexcSym:"XAUT_USDT",
    binK:"https://api.binance.com/api/v3/klines?symbol=PAXGUSDT&interval=1h&limit=1000"},
   {id:"SILVER",label:"Silver",display:"SILVER/USDT",color:"#C0C0C0",icon:"Ag",dec:3,mexcSym:"SILVER_USDT",binK:null},
-  {id:"OIL",label:"Oil WTI",display:"USOIL/USDT",color:"#8B4513",icon:"Oil",dec:2,mexcSym:"USOIL_USDT",binK:null}
+  {id:"OIL",label:"Oil WTI",display:"USOIL/USDT",color:"#8B4513",icon:"Oil",dec:3,mexcSym:"USOIL_USDT",binK:null}
 ];
 
 var FB={BTC:{b:67400,d:0.00035,v:0.020,s:0.07},GOLD:{b:4750,d:0.00008,v:0.005,s:0.02},SILVER:{b:75,d:0.00008,v:0.008,s:0.03},OIL:{b:62,d:0.00005,v:0.006,s:0.02}};
