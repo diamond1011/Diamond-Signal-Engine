@@ -76,7 +76,7 @@ body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospa
     </div>
     <div class="top-right">
       <span id="rtime" style="font-size:8px;color:var(--muted)"></span>
-      <div class="tstat"><div class="tsl">CAPITAL</div><div class="tsv" style="color:var(--accent)">$315</div></div>
+      <div class="tstat"><div class="tsl">CAPITAL</div><div class="tsv" style="color:var(--accent)">$548</div></div><button onclick="showDepositModal()" style="padding:4px 10px;background:rgba(0,232,122,0.12);border:1px solid rgba(0,232,122,0.35);color:var(--green);font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;border-radius:2px;cursor:pointer">+ DEPÓSITO</button>
     </div>
   </div>
   <div id="tabs"></div>
@@ -84,7 +84,7 @@ body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospa
 </div>
 <div id="modal"></div>
 <script>
-var CAPITAL_INICIAL=315;
+var CAPITAL_INICIAL=548.05;
 var APALANCAMIENTO=44;
 var BIAS_MIN=0.65,VOL_MAX=2.5,KF=0.5,MAX_K=0.20;
 var TG_TOKEN="8563359700:AAF2lOkal_iDOSMhyndVDsPNvKfIa1x0QaE";
@@ -133,7 +133,7 @@ function loadState(){
   }catch(e){S.trades=TRADES_INICIALES;S.balance={initial:CAPITAL_INICIAL,current:241.31,history:[]};}
 }
 
-var S={data:{},sources:{},results:{},bayes:{},active:"BTC",sent:{},trades:[],balance:{initial:CAPITAL_INICIAL,current:463.55,history:[]}};
+var S={data:{},sources:{},results:{},bayes:{},active:"BTC",sent:{},trades:[],balance:{initial:CAPITAL_INICIAL,current:548.05,history:[]}};
 
 function randn(){var u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 function simulate(id,n){var p=FB[id]||FB.BTC,pr=p.b,d=[];for(var i=0;i<n;i++){var ret=p.d+p.v*randn()+(Math.random()<0.004?(Math.random()-0.5)*p.s:0);var o=pr;pr=Math.max(pr*(1+ret),p.b*0.3);d.push({o:o,h:Math.max(o,pr)*(1+Math.abs(randn())*0.001),l:Math.min(o,pr)*(1-Math.abs(randn())*0.001),c:pr,ret:ret});}return d;}
