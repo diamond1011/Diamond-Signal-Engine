@@ -532,7 +532,7 @@ function render(){
       info6.forEach(function(w){var dc=w.dir==="LONG"?"var(--green)":"var(--red)";h+="<div style='flex:1;background:var(--card);border:1px solid var(--border);border-left:2px solid "+dc+";border-radius:3px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center'><span style='font-size:11px;font-weight:700;color:#fff'>6H</span><span style='font-size:10px;font-weight:700;color:"+dc+"'>"+w.dir+" "+fmtP(w.bias)+"</span></div>";});
       h+="</div></div>";
     }
-    if(skipW.length>0){h+="<div class='frow'><span style='font-size:7px;letter-spacing:4px;color:var(--muted)'>FILTRADAS:</span>";skipW.forEach(function(w){h+="<span class='ftag'><span style='color:rgba(255,45,85,0.5)'>✕</span>"+w.label+"<span style='font-size:7px;color:rgba(255,45,85,0.5)'>"+(w.bias*100).toFixed(0)+"%</span></span>";});h+="</div>";}
+    if(skipW.length>0){h+="<div class='frow'><span style='font-size:7px;letter-spacing:4px;color:var(--muted)'>FILTRADAS:</span>";skipW.forEach(function(w){h+="<span class='ftag'><span style='color:rgba(255,45,85,0.5)'>✕</span>"+w.label+" <span style='font-size:7px;color:"+(w.dir==="LONG"?"var(--green)":"var(--red)")+"'>"+w.dir+"</span> <span style='font-size:7px;color:rgba(255,45,85,0.5)'>"+(w.bias*100).toFixed(0)+"%</span></span>";});h+="</div>";}
   }
 
   else if(navTab==="open"){
