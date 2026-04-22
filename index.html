@@ -91,6 +91,7 @@ var TG_TOKEN="8563359700:AAF2lOkal_iDOSMhyndVDsPNvKfIa1x0QaE";
 var TG_CHAT="5106454697";
 var REFRESH=60000;
 var ATR_MULT={"6H":1,"12H":1.5,"24H":2,"48H":3,"1W":5};
+var ATR_MULT_SMALL={"6H":0.5,"12H":0.8,"24H":1,"48H":1.5,"1W":2.5};
 var VENTANAS_OPERABLES=["12H","24H","48H","1W"];
 var RAILWAY="https://diamond-signal-engine-production.up.railway.app";
 var MEXC=function(sym){return RAILWAY+"/price/"+sym;};
@@ -371,7 +372,7 @@ function analyze(data,asset){
     var ur=sl.filter(function(d){return d.ret>0;}).map(function(d){return d.ret;});var dr=sl.filter(function(d){return d.ret<=0;}).map(function(d){return Math.abs(d.ret);});
     var aw=ur.length?ur.reduce(function(a,b){return a+b;},0)/ur.length:0.001;var al=dr.length?dr.reduce(function(a,b){return a+b;},0)/dr.length:0.001;
     var ci=wilson(ups,n),conf=Math.min(ci/(wins||0.01),1),k=calcKelly(bias,aw,al,conf,wdef.label);
-    var mx=ATR_MULT[wdef.label]||2,slD=atr*mx,tpD=slD*tpMultiplier(bias),entry=price;
+    var mx=(asset.id==="OIL"||asset.id==="SILVER"?ATR_MULT_SMALL[wdef.label]:ATR_MULT[wdef.label])||2,slD=atr*mx,tpD=slD*tpMultiplier(bias),entry=price;
     var tp=dir==="LONG"?entry+tpD:entry-tpD,sl2=dir==="LONG"?entry-slD:entry+slD;
     var operable=VENTANAS_OPERABLES.indexOf(wdef.label)!==-1,is12H=wdef.label==="12H";
     var sigKey=asset.id+"-"+wdef.label+"-"+dir;
