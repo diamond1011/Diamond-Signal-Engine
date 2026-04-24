@@ -379,7 +379,7 @@ function analyze(data,asset){
     if(bias>=BIAS_MIN&&vr<VOL_MAX){if(!SIGNAL_TIMES[sigKey])SIGNAL_TIMES[sigKey]=Date.now();}
     else{delete SIGNAL_TIMES[sigKey];}
     var sigDuration=SIGNAL_TIMES[sigKey]?Date.now()-SIGNAL_TIMES[sigKey]:0;
-    return{label:wdef.label,size:wdef.size,tag:wdef.tag,wins:wins,bias:bias,dir:dir,aw:aw,al:al,ci:ci,conf:conf,k:k,sz:parseFloat((k*CAPITAL_INICIAL).toFixed(2)),entry:entry,tp:tp,sl:sl2,rr:tpD/slD,is12H:is12H,sigDuration:sigDuration,active:bias>=BIAS_MIN&&operable,signal:bias>=BIAS_MIN};
+    return{label:wdef.label,size:wdef.size,tag:wdef.tag,wins:wins,bias:bias,dir:dir,aw:aw,al:al,ci:ci,conf:conf,k:k,sz:parseFloat((k*S.balance.current).toFixed(2)),entry:entry,tp:tp,sl:sl2,rr:tpD/slD,is12H:is12H,sigDuration:sigDuration,active:bias>=BIAS_MIN&&operable,signal:bias>=BIAS_MIN};
   });
   return{windows:windows,v24:v24,v30:v30,vr:vr,price:price,atr:atr};
 }
