@@ -82,8 +82,8 @@ body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospa
     </div>
     <div class="top-right">
       <span id="rtime" style="font-size:8px;color:var(--muted)"></span>
-      <div class="tstat"><div class="tsl">CAPITAL</div><div class="tsv" style="color:var(--accent)">$548</div></div><button onclick="showDepositModal()" style="padding:4px 10px;background:rgba(0,232,122,0.12);border:1px solid rgba(0,232,122,0.35);color:var(--green);font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;border-radius:2px;cursor:pointer">+ DEPÓSITO</button>
-      <button onclick="showAjustarModal()" style="padding:4px 10px;background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.35);color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;border-radius:2px;cursor:pointer">= SALDO</button>
+      <div class="tstat"><div class="tsl">CAPITAL</div><div class="tsv" style="color:var(--accent)">$548</div></div><button onclick=\"showDepositModal()" style="padding:4px 10px;background:rgba(0,232,122,0.12);border:1px solid rgba(0,232,122,0.35);color:var(--green);font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;border-radius:2px;cursor:pointer">+ DEPÓSITO</button>
+      <button onclick=\"showAjustarModal()" style="padding:4px 10px;background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.35);color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;border-radius:2px;cursor:pointer">= SALDO</button>
     </div>
   </div>
   <div id="tabs"></div>
@@ -454,7 +454,7 @@ var tabsHTML=””;
 ASSETS.forEach(function(a){
 var sigs=S.results[a.id]&&S.results[a.id].windows?S.results[a.id].windows.filter(function(w){return w.active;}).length:0;
 var src=S.sources[a.id]||“SIM”,on=S.active===a.id;
-tabsHTML+=”<button class=‘tab”+(on?” on”:””)+”’ onclick="setActive(’”+a.id+”’)" style=‘color:”+(on?a.color:“var(--muted)”)+”;border-bottom:2px solid “+(on?a.color:“transparent”)+”’>”
+tabsHTML+=”<button class=‘tab”+(on?” on”:””)+”’ onclick=\"setActive(’”+a.id+”’)" style=‘color:”+(on?a.color:“var(--muted)”)+”;border-bottom:2px solid “+(on?a.color:“transparent”)+”’>”
 +a.icon+” “+a.id+”<span style='font-size:7px;color:"+srcColor(src)+"'>●”+srcLabel(src)+”</span>”
 +(sigs>0?”<span style='font-size:8px;padding:1px 5px;border-radius:1px;background:"+a.color+"25;color:"+a.color+"'>”+sigs+”</span>”:””)+”</button>”;
 });
@@ -501,7 +501,7 @@ var navTab=S.tab||“signals”;
 h+=”<div style='display:flex;gap:2px;background:var(--surf);border:1px solid var(--border);border-radius:4px;padding:4px'>”
 +[“signals”,“open”,“history”].map(function(tab){
 var labels={“signals”:“📡 SEÑALES”,“open”:“📂 ABIERTOS (”+openTrades.length+”)”,“history”:“📋 HISTORIAL”};var on=navTab===tab;
-return “<button onclick="setTab(’”+tab+”’)" style=‘flex:1;padding:7px;border:none;border-radius:3px;background:”+(on?“var(--dim)”:“transparent”)+”;color:”+(on?”#fff”:“var(--muted)”)+”;font-family:JetBrains Mono,monospace;font-size:8px;letter-spacing:1px;cursor:pointer’>”+labels[tab]+”</button>”;
+return “<button onclick=\"setTab(’”+tab+”’)" style=‘flex:1;padding:7px;border:none;border-radius:3px;background:”+(on?“var(--dim)”:“transparent”)+”;color:”+(on?”#fff”:“var(--muted)”)+”;font-family:JetBrains Mono,monospace;font-size:8px;letter-spacing:1px;cursor:pointer’>”+labels[tab]+”</button>”;
 }).join(””)+”</div>”;
 
 if(navTab===“signals”){
@@ -612,7 +612,7 @@ h+=”<div style='background:var(--card);border:1px solid var(--border);border-l
 +”<div style='font-size:8px;color:var(--muted)'>USDT</div></div></div>”
 +”<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px'><div class='ol'><div class='ol-l'>ENTRADA</div><div class='ol-v' style='color:var(--accent)'>”+fmtN(t.entry,ast2?ast2.dec:2)+”</div></div><div class='ol'><div class='ol-l'>TAKE PROFIT</div><div class='ol-v' style='color:var(--green)'>”+fmtN(t.tp,ast2?ast2.dec:2)+”</div></div><div class='ol'><div class='ol-l'>STOP LOSS</div><div class='ol-v' style='color:var(--red)'>”+fmtN(t.sl,ast2?ast2.dec:2)+”</div></div></div>”
 +(!isNotBTC?”<div style='margin-bottom:10px'><div style='display:flex;justify-content:space-between;font-size:7px;color:var(--muted);margin-bottom:3px'><span>SL</span><span>Progreso: “+tpPct.toFixed(0)+”%</span><span>TP</span></div><div style='height:4px;background:var(--dim);border-radius:2px;overflow:hidden'><div style='height:100%;width:"+tpPct+"%;background:linear-gradient(90deg,var(--amber),var(--green));border-radius:2px'></div></div><div style='text-align:center;font-size:8px;margin-top:3px;color:var(--accent)'>$”+fmtN(cur,ast2?ast2.dec:2)+”</div></div>”:”<div style='background:rgba(255,184,0,0.06);border:1px solid rgba(255,184,0,0.2);border-radius:3px;padding:8px;margin-bottom:10px;font-size:8px;color:var(--amber)'>Consulta el P&L en MEXC y cierra con POR P&L $</div>”)
-+”<div style='display:flex;gap:6px'><button onclick="showEditModal(’”+t.id+”’)" style=‘flex:1;padding:8px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:var(--accent);font-family:JetBrains Mono,monospace;font-size:8px;border-radius:2px;cursor:pointer’>✏️ TP/SL</button><button onclick="showCloseModal(’”+t.id+”’)" style=‘flex:1;padding:8px;background:rgba(255,184,0,0.1);border:1px solid rgba(255,184,0,0.3);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:8px;border-radius:2px;cursor:pointer’>⚡ CERRAR</button><button onclick="deleteTrade(’”+t.id+”’)" style=‘padding:8px 10px;background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.3);color:var(--red);font-family:JetBrains Mono,monospace;font-size:8px;border-radius:2px;cursor:pointer’>🗑</button></div></div>”;
++”<div style='display:flex;gap:6px'><button onclick=\"showEditModal(’”+t.id+”’)" style=‘flex:1;padding:8px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:var(--accent);font-family:JetBrains Mono,monospace;font-size:8px;border-radius:2px;cursor:pointer’>✏️ TP/SL</button><button onclick=\"showCloseModal(’”+t.id+”’)" style=‘flex:1;padding:8px;background:rgba(255,184,0,0.1);border:1px solid rgba(255,184,0,0.3);color:var(--amber);font-family:JetBrains Mono,monospace;font-size:8px;border-radius:2px;cursor:pointer’>⚡ CERRAR</button><button onclick=\"deleteTrade(’”+t.id+”’)" style=‘padding:8px 10px;background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.3);color:var(--red);font-family:JetBrains Mono,monospace;font-size:8px;border-radius:2px;cursor:pointer’>🗑</button></div></div>”;
 });
 }
 h+=”</div>”;
@@ -627,7 +627,7 @@ var runBal=CAPITAL_INICIAL;
 closedTrades.slice().reverse().forEach(function(t){
 runBal=parseFloat((runBal+(t.pnl||0)).toFixed(2));var pc=t.pnl>=0?“var(--green)”:“var(--red)”;var ci=t.closedBy===“TP”?“✅”:t.closedBy===“SL”?“🛑”:“⚡”;
 h+=”<tr><td style='color:var(--muted);font-size:8px'>”+fmtDate(t.closeTime)+”</td><td style='font-weight:600;color:var(--accent)'>”+t.assetId+”</td><td style='color:"+(t.dir==="LONG"?"var(--green)":"var(--red)")+"'>”+t.dir+”</td><td style='color:var(--muted)'>”+ci+” “+t.closedBy+”</td><td style='color:"+pc+";font-weight:700'>”+(t.pnl>=0?”+”:””)+fmtN(t.pnl,2)+”</td><td style='color:#fff'>$”+fmtN(runBal,2)+”</td>”
-+”<td style='display:flex;gap:3px'><button onclick="showEditPnlModal(’”+t.id+”’)" style=‘padding:3px 6px;background:transparent;border:1px solid var(--dim);color:var(--muted);font-family:JetBrains Mono,monospace;font-size:7px;border-radius:2px;cursor:pointer’>✏️</button><button onclick="deleteTrade(’”+t.id+”’)" style=‘padding:3px 6px;background:transparent;border:1px solid rgba(255,45,85,0.2);color:var(--red);font-family:JetBrains Mono,monospace;font-size:7px;border-radius:2px;cursor:pointer’>🗑</button></td></tr>”;
++”<td style='display:flex;gap:3px'><button onclick=\"showEditPnlModal(’”+t.id+”’)" style=‘padding:3px 6px;background:transparent;border:1px solid var(--dim);color:var(--muted);font-family:JetBrains Mono,monospace;font-size:7px;border-radius:2px;cursor:pointer’>✏️</button><button onclick=\"deleteTrade(’”+t.id+”’)" style=‘padding:3px 6px;background:transparent;border:1px solid rgba(255,45,85,0.2);color:var(--red);font-family:JetBrains Mono,monospace;font-size:7px;border-radius:2px;cursor:pointer’>🗑</button></td></tr>”;
 });
 h+=”</tbody></table></div>”;
 var wins=closedTrades.filter(function(t){return t.pnl>0;}).length;var wr=closedTrades.length?((wins/closedTrades.length)*100).toFixed(0):0;
