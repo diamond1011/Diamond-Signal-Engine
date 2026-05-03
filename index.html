@@ -204,7 +204,7 @@ var pnl=parseFloat((S.balance.current*(trade.sz/100)*pct*APALANCAMIENTO).toFixed
 var commission=parseFloat((Math.abs(pnl)*0.001).toFixed(3));pnl=parseFloat((pnl-commission).toFixed(2));
 trade.status=“CLOSED”;trade.closePrice=closePrice;trade.closedBy=closedBy;trade.pnl=pnl;trade.commission=commission;trade.closeTime=closeTime||new Date().toISOString();
 S.balance.current=parseFloat((S.balance.current+pnl).toFixed(2));
-S.balance.history.push({date:new Date().toISOString().split(“T”)[0],event:“Trade “+(closedBy===“TP”?“✅ TP”:(closedBy===“SL”?“🛑 SL”:“⚡ Manual”))+” — “+trade.assetId+” “+trade.dir,balance:S.balance.current});
+S.balance.history.push({date:new Date().toISOString().split(“T”)[0],event:“Trade “+(closedBy===“TP”?“✅ TP”:(closedBy===“SL”?“🛑 SL”:“⚡ Manual”))+” -- “+trade.assetId+” “+trade.dir,balance:S.balance.current});
 sendTG((closedBy===“TP”?“✅ TP ALCANZADO”:(closedBy===“SL”?“🛑 SL ALCANZADO”:“⚡ CIERRE MANUAL”))+”\n”+trade.assetId+” “+trade.dir+”\nEntrada: “+trade.entry+”\nCierre: “+closePrice+”\nP&L: “+(pnl>0?”+”:””)+pnl+” USDT\nBalance: $”+S.balance.current+”\nx”+APALANCAMIENTO);
 saveState();syncTradesToRailway();render();
 }
@@ -212,7 +212,7 @@ function closeTradeByPnl(tradeId,pnl){
 var trade=S.trades.find(function(t){return t.id===tradeId;});if(!trade||trade.status!==“OPEN”)return;
 trade.status=“CLOSED”;trade.closePrice=null;trade.closedBy=“MANUAL”;trade.pnl=parseFloat(pnl.toFixed(2));trade.commission=0;trade.closeTime=new Date().toISOString();
 S.balance.current=parseFloat((S.balance.current+trade.pnl).toFixed(2));
-S.balance.history.push({date:new Date().toISOString().split(“T”)[0],event:“Trade ⚡ Manual — “+trade.assetId+” “+trade.dir,balance:S.balance.current});
+S.balance.history.push({date:new Date().toISOString().split(“T”)[0],event:“Trade ⚡ Manual -- “+trade.assetId+” “+trade.dir,balance:S.balance.current});
 sendTG(“⚡ CIERRE MANUAL\n”+trade.assetId+” “+trade.dir+”\nP&L: “+(pnl>0?”+”:””)+pnl.toFixed(2)+” USDT\nBalance: $”+S.balance.current);
 saveState();syncTradesToRailway();render();
 }
@@ -425,9 +425,9 @@ var q=signalQuality(w);
 var d=w.dir===“LONG”?“🟢 LONG”:“🔴 SHORT”;var warn=w.is12H?”\n⚠ Señal 12H”:””;
 var timeTag=w.sigDuration<1800000?“⚡ NUEVA”:“⏱ “+fmtDuration(w.sigDuration)+” activa”;
 var maxLoss=fmtN(S.balance.current*RIESGO_PCT,2);
-return “<b>”+q.emoji+” “+q.label+” — “+asset.display+”</b>\n”+d+” “+w.label+” (”+w.tag+”)”+warn+”\n”+timeTag+”\n\nBias: “+(w.bias*100).toFixed(1)+”% · CI: “+(w.ci*100).toFixed(0)+”% · CONF: “+(w.conf*100).toFixed(0)+”%\n\nNiveles MEXC:\nEntrada: “+w.entry.toFixed(asset.dec)+”\nTP: “+w.tp.toFixed(asset.dec)+” ✅\nSL: “+w.sl.toFixed(asset.dec)+” 🛑\n\nTamaño: $”+w.sz+” USDT · x”+APALANCAMIENTO+”\nRiesgo máx: $”+maxLoss+” (15%)\nR/R: 1:”+w.rr.toFixed(1);
+return “<b>”+q.emoji+” “+q.label+” -- “+asset.display+”</b>\n”+d+” “+w.label+” (”+w.tag+”)”+warn+”\n”+timeTag+”\n\nBias: “+(w.bias*100).toFixed(1)+”% · CI: “+(w.ci*100).toFixed(0)+”% · CONF: “+(w.conf*100).toFixed(0)+”%\n\nNiveles MEXC:\nEntrada: “+w.entry.toFixed(asset.dec)+”\nTP: “+w.tp.toFixed(asset.dec)+” ✅\nSL: “+w.sl.toFixed(asset.dec)+” 🛑\n\nTamaño: $”+w.sz+” USDT · x”+APALANCAMIENTO+”\nRiesgo máx: $”+maxLoss+” (15%)\nR/R: 1:”+w.rr.toFixed(1);
 }
-function fmtN(n,d){return typeof n===“number”?n.toLocaleString(“en-US”,{minimumFractionDigits:d,maximumFractionDigits:d}):”—”;}
+function fmtN(n,d){return typeof n===“number”?n.toLocaleString(“en-US”,{minimumFractionDigits:d,maximumFractionDigits:d}):”--”;}
 function fmtP(n){return(n*100).toFixed(1)+”%”;}
 function srcColor(s){return(s===“BIN”||s===“MEXC”)?“var(–green)”:“var(–red)”;}
 function srcLabel(s){return s===“MEXC”?“MEXC”:s===“BIN”?“BINANCE”:“SIM”;}
@@ -523,13 +523,13 @@ h+="<div style='background:var(--surf);border:1px solid var(--border);border-lef
   +"<div class='vs'><div class='vs-l'>RATIO</div><div class='vs-v big"+(vwarn?" warn":"")+"'>"+r.vr.toFixed(2)+"×</div></div>"
   +"<div class='vs'><div class='vs-l'>ATR</div><div class='vs-v'>$"+fmtN(r.atr,ast.dec)+"</div></div></div></div>";
 
-if(vwarn)h+="<div class='warn-bar'>⚠ VOL "+r.vr.toFixed(2)+"× — LÍMITE SUPERADO — FLAT EN "+ast.id+"</div>";
+if(vwarn)h+="<div class='warn-bar'>⚠ VOL "+r.vr.toFixed(2)+"× -- LÍMITE SUPERADO -- FLAT EN "+ast.id+"</div>";
 
 if(hasConfluence){
   h+="<div style='background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.4);border-radius:4px;padding:10px 14px;display:flex;align-items:center;gap:10px'>"
     +"<span style='font-size:18px'>🔥</span>"
-    +"<div><div style='font-size:9px;font-weight:700;color:var(--amber);letter-spacing:2px'>CONFLUENCIA — "+actW.length+" VENTANAS ACTIVAS</div>"
-    +"<div style='font-size:8px;color:var(--muted);margin-top:2px'>Múltiples ventanas confirman "+(confluenceDir==="LONG"?"🟢 LONG":"🔴 SHORT")+" — señal de alta probabilidad</div></div></div>";
+    +"<div><div style='font-size:9px;font-weight:700;color:var(--amber);letter-spacing:2px'>CONFLUENCIA -- "+actW.length+" VENTANAS ACTIVAS</div>"
+    +"<div style='font-size:8px;color:var(--muted);margin-top:2px'>Múltiples ventanas confirman "+(confluenceDir==="LONG"?"🟢 LONG":"🔴 SHORT")+" -- señal de alta probabilidad</div></div></div>";
 }
 
 // Alerta señal contraria
@@ -555,7 +555,7 @@ function renderCard(w){
   var maxLossThis=fmtN(S.balance.current*RIESGO_PCT,2);
   var atrMult=(ast.id==="OIL"||ast.id==="SILVER")?ATR_MULT_SMALL[w.label]:ATR_MULT[w.label];
   return "<div class='card' style='border-left:3px solid "+borderColor+"'>"
-    +(w.is12H?"<div style='background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.25);border-radius:3px;padding:5px 9px;margin-bottom:9px;font-size:8px;color:var(--amber)'>⚠ 12H — MENOR FIABILIDAD · Kelly 25%</div>":"")
+    +(w.is12H?"<div style='background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.25);border-radius:3px;padding:5px 9px;margin-bottom:9px;font-size:8px;color:var(--amber)'>⚠ 12H -- MENOR FIABILIDAD · Kelly 25%</div>":"")
     +"<div class='sq "+q.cls+"'>"+q.emoji+" "+q.label+"</div>"
     +"<div class='card-hd'><div><div style='display:flex;align-items:center;gap:6px'><span class='c-label'>"+w.label+"</span><span class='c-tag'>"+w.tag.toUpperCase()+"</span>"+timeTag+"</div><div class='c-sub'>"+w.size+"H · x"+APALANCAMIENTO+"</div></div>"
     +"<div style='text-align:right'><div class='c-dir' style='color:"+dc+"'>"+w.dir+"</div><div class='c-bias'>"+fmtP(w.bias)+"</div><div class='c-bl'>BIAS</div></div></div>"
@@ -579,8 +579,8 @@ function renderCard(w){
     +"</div></div>";
 }
 
-if(actMain.length>0){h+="<div><div class='sec-l'>✅ SEÑALES SÓLIDAS — 24H · 48H · 1W</div><div class='cards'>";actMain.forEach(function(w){h+=renderCard(w);});h+="</div></div>";}
-if(act12.length>0){h+="<div><div class='sec-l'>⚠ SEÑALES 12H — MENOR FIABILIDAD</div><div class='cards'>";act12.forEach(function(w){h+=renderCard(w);});h+="</div></div>";}
+if(actMain.length>0){h+="<div><div class='sec-l'>✅ SEÑALES SÓLIDAS -- 24H · 48H · 1W</div><div class='cards'>";actMain.forEach(function(w){h+=renderCard(w);});h+="</div></div>";}
+if(act12.length>0){h+="<div><div class='sec-l'>⚠ SEÑALES 12H -- MENOR FIABILIDAD</div><div class='cards'>";act12.forEach(function(w){h+=renderCard(w);});h+="</div></div>";}
 if(actW.length===0){h+="<div class='flat'>SIN SEÑALES EN "+ast.id+"</div>";}
 
 var info6=r.windows.filter(function(w){return w.label==="6H"&&w.signal;});
